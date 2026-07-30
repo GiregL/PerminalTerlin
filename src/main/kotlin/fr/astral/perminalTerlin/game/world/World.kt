@@ -1,5 +1,9 @@
 package fr.astral.perminalTerlin.game.world
 
+import fr.astral.perminalTerlin.engine.rendering.BackgroundColor
+import fr.astral.perminalTerlin.engine.rendering.ForegroundColor
+import fr.astral.perminalTerlin.engine.rendering.StyleComposable
+
 /**
  * Represents a renderable object within a grid-based world.
  * Uses ANSI based codes to render the object.
@@ -8,12 +12,18 @@ interface WorldRenderable {
     fun render(): String
 }
 
-enum class TileType(val representationChar: Char) {
-    VOID(' '),
-    WATER('~'),
-    STONE('^'),
-    SAND('~'),
-    GRASS(',');
+enum class TileType(val representationChar: Char,
+                    val foregroundColor: ForegroundColor,
+                    val backgroundColor: BackgroundColor = BackgroundColor.BLACK) : WorldRenderable {
+    VOID(' ', ForegroundColor.BLACK),
+    WATER('~', ForegroundColor.BLUE),
+    STONE('^', ForegroundColor.WHITE),
+    SAND('~', ForegroundColor.YELLOW),
+    GRASS(',', ForegroundColor.GREEN);
+
+    override fun render(): String {
+        return "${(backgroundColor + foregroundColor).render()}$representationChar${BackgroundColor.RESET.render()}"
+    }
 }
 
 /**
@@ -41,7 +51,7 @@ data class Tile(val type: TileType, val slot: TileSlot? = null): WorldRenderable
     }
 
     override fun render(): String {
-        return "${type.representationChar}"
+        return type.render()
     }
 }
 
